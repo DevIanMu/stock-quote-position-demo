@@ -140,9 +140,16 @@
     .o-qty-top { font-weight: 600; color: var(--text); font-size: 15px; }
     .o-qty-bot { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
     
+    .order-header { display: flex; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border); }
+    .order-header .col-h { flex: 1; font-size: 12px; color: var(--text-secondary); }
+    .order-header .col-h-status { flex: 0.9; }
+    .order-header .col-h-price { flex: 1; text-align: center; }
+    .order-header .col-h-qty { flex: 1; text-align: right; }
+    
     .order-actions { display: none; gap: 10px; padding: 0 0 14px; }
     .order-item.active .order-actions { display: flex; }
     .act-btn { padding: 6px 20px; border-radius: 14px; font-size: 13px; font-weight: 500; border: none; }
+    .act-btn.detail { color: var(--text); background: #f5f5f5; }
     .act-btn.modify { color: var(--blue); background: #e8f0fe; }
     .act-btn.cancel { color: var(--red); background: #ffebee; }
     
@@ -343,14 +350,20 @@
       
       <!-- 订单 -->
       <div id="ordPanel" style="display:none;">
-        <div class="order-list" id="orderList"></div>
+        <div class="order-list">
+          <div class="order-header">
+            <div class="col-h col-h-status">状态</div>
+            <div class="col-h col-h-price">委托价</div>
+            <div class="col-h col-h-qty">数量/已成</div>
+          </div>
+          <div id="orderList"></div>
         <div class="history-entry" onclick="goToHistory()">查看历史订单</div>
       </div>
     </div>
   </div>
 
   <script>
-    const orders = [
+    const allOrders = [
       // 未完成
       { side: '买入', status: '待成交', price: '138.000', qty: 200, filled: 0 },
       { side: '卖出', status: '部分成交', price: '142.000', qty: 100, filled: 30 },
@@ -365,6 +378,7 @@
       { side: '卖出', status: '已成交', price: '145.000', qty: 300, filled: 300 },
       { side: '买入', status: '已成交', price: '133.000', qty: 200, filled: 200 }
     ];
+    let orders = [...allOrders];
 
     const drawer = document.getElementById('drawer');
     const mask = document.getElementById('mask');
@@ -405,6 +419,20 @@
     // 渲染订单列表（与平台表头一致：状态/委托价/数量/已成）
     function renderOrders() {
       const box = document.getElementById('orderList');
+      const header = document.querySelector('#ordPanel .order-header');
+      const historyEntry = document.querySelector('#ordPanel .history-entry');
+      if (orders.length === 0) {
+        if (header) header.style.display = 'none';
+        if (historyEntry) historyEntry.style.display = 'none';
+        box.innerHTML = `
+          <div style="text-align:center;padding:40px 20px;color:#999;">
+            <div style="font-size:15px;margin-bottom:16px;">暂无今日订单</div>
+            <div style="font-size:14px;color:var(--blue);cursor:pointer;" onclick="goToHistory()">查看历史订单</div>
+          </div>`;
+        return;
+      }
+      if (header) header.style.display = 'flex';
+      if (historyEntry) historyEntry.style.display = 'block';
       box.innerHTML = orders.map((o, i) => `
         <div class="order-item ${activeOrderIndex === i ? 'active' : ''}" onclick="toggleOrder(${i})">
           <div class="order-info">
@@ -423,9 +451,10 @@
             </div>
           </div>
           <div class="order-actions" onclick="event.stopPropagation()">
-            ${o.status === '已成交' 
-              ? '<button class="act-btn" style="background:#f5f5f5;color:#999;">已完成</button>' 
-              : `<button class="act-btn modify" onclick="modifyOrder(${i})">改单</button><button class="act-btn cancel" onclick="showCancelModal(${i})">撤单</button>`}
+            <button class="act-btn detail" onclick="viewOrderDetail(${i})">详情</button>
+            ${o.status !== '已成交' 
+              ? `<button class="act-btn modify" onclick="modifyOrder(${i})">改单</button><button class="act-btn cancel" onclick="showCancelModal(${i})">撤单</button>` 
+              : ''}
           </div>
         </div>
       `).join('');
@@ -434,6 +463,10 @@
     window.toggleOrder = function(index) {
       activeOrderIndex = activeOrderIndex === index ? -1 : index;
       renderOrders();
+    };
+
+    window.viewOrderDetail = function(index) {
+      alert('跳转订单详情页');
     };
 
     window.modifyOrder = function(index) {
@@ -505,6 +538,15 @@
       btn.classList.add('on');
       renderFooter();
       
+      // 同步更新订单数据
+      if (state === 'empty') {
+        orders = [];
+      } else {
+        orders = [...allOrders];
+      }
+      renderOrders();
+      updateBadge();
+      
       // 同步更新持仓面板内容
       const posPanel = document.getElementById('posPanel');
       if (demoState === 'position') {
@@ -532,8 +574,7 @@
       } else {
         posPanel.innerHTML = `
           <div class="pos-card" style="text-align:center;padding:40px 20px;color:#999;">
-            <div style="font-size:15px;margin-bottom:8px;">暂无持仓</div>
-            <div style="font-size:13px;color:#bbb;">该股票当前无持仓</div>
+            <div style="font-size:15px;">暂无持仓</div>
           </div>`;
       }
     };
