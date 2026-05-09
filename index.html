@@ -140,6 +140,8 @@
     .act-btn.cancel { color: var(--red); background: #ffebee; }
     
     .history-entry { text-align: center; padding: 16px 0; font-size: 14px; color: var(--blue); cursor: pointer; }
+    .load-more { text-align: center; padding: 14px 0; font-size: 14px; color: var(--blue); cursor: pointer; border-top: 1px solid var(--border); }
+    .load-more:active { opacity: 0.7; }
     
     /* 撤单确认弹窗 */
     .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 100; display: none; align-items: center; justify-content: center; }
@@ -251,7 +253,8 @@
               <div class="col-h col-h-qty">数量/已成</div>
             </div>
             <div id="orderList"></div>
-            <div class="history-entry" onclick="goToHistory()">查看历史订单</div>
+            <div class="load-more" id="loadMoreBtn" onclick="loadMoreOrders()">更多</div>
+            <div class="history-entry" id="historyEntry" onclick="goToHistory()">查看历史订单</div>
           </div>
         </div>
       </div>
@@ -355,6 +358,7 @@
     let demoState = 'position';
     let activeOrderIndex = -1;
     let pendingCancelIndex = -1;
+    let displayCount = 5;
 
     function togglePanel(id) {
       document.getElementById(id).classList.toggle('open');
@@ -364,20 +368,22 @@
     function renderOrders() {
       const box = document.getElementById('orderList');
       const header = document.querySelector('#orderContent .order-header');
-      const historyEntry = document.querySelector('#orderContent .history-entry');
+      const loadMoreBtn = document.getElementById('loadMoreBtn');
+      const historyEntry = document.getElementById('historyEntry');
       if (orders.length === 0) {
         if (header) header.style.display = 'none';
-        if (historyEntry) historyEntry.style.display = 'none';
+        if (loadMoreBtn) loadMoreBtn.style.display = 'none';
+        if (historyEntry) historyEntry.style.display = 'block';
         box.innerHTML = `
           <div style="text-align:center;padding:40px 20px;color:#999;">
             <div style="font-size:15px;margin-bottom:16px;">暂无今日订单</div>
-            <div style="font-size:14px;color:var(--blue);cursor:pointer;" onclick="goToHistory()">查看历史订单</div>
           </div>`;
         return;
       }
       if (header) header.style.display = 'flex';
-      if (historyEntry) historyEntry.style.display = 'block';
-      box.innerHTML = orders.map((o, i) => `
+      
+      const visibleOrders = orders.slice(0, displayCount);
+      box.innerHTML = visibleOrders.map((o, i) => `
         <div class="order-item ${activeOrderIndex === i ? 'active' : ''}" onclick="toggleOrder(${i})">
           <div class="order-info">
             <div class="col col-status">
@@ -402,7 +408,21 @@
           </div>
         </div>
       `).join('');
+      
+      const hasMore = orders.length > displayCount;
+      if (loadMoreBtn) {
+        loadMoreBtn.style.display = hasMore ? 'block' : 'none';
+        loadMoreBtn.textContent = '更多';
+      }
+      if (historyEntry) {
+        historyEntry.style.display = hasMore ? 'none' : 'block';
+      }
     }
+
+    window.loadMoreOrders = function() {
+      displayCount += 5;
+      renderOrders();
+    };
 
     window.toggleOrder = function(index) {
       activeOrderIndex = activeOrderIndex === index ? -1 : index;
