@@ -67,42 +67,28 @@
     .bs .v.red { color: var(--red); }
     .bs .v.green { color: var(--green); }
     
-    /* 快览条 */
-    .footer-bar { position: fixed; bottom: 74px; left: 50%; transform: translateX(-50%); width: calc(100% - 32px); max-width: 382px; background: #fff; border-radius: 12px; padding: 11px 14px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 -2px 10px rgba(0,0,0,0.06), 0 2px 6px rgba(0,0,0,0.03); z-index: 52; cursor: pointer; }
-    .footer-bar:active { opacity: 0.92; }
-    .fl { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--text); }
-    .fl strong { font-weight: 700; }
-    .badge { background: #e8f0fe; color: var(--blue); padding: 1px 6px; border-radius: 4px; font-size: 11px; font-weight: 700; }
-    .fr { font-size: 15px; font-weight: 700; color: var(--red); }
-    .fr small { font-size: 12px; font-weight: 500; margin-left: 2px; opacity: 0.9; }
+    /* ===== 嵌入折叠面板 ===== */
+    .embed-panel { background: #fff; margin-top: 8px; }
+    .embed-header { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; cursor: pointer; }
+    .embed-header:active { background: #f9f9f9; }
+    .embed-header-left { display: flex; align-items: center; gap: 8px; font-size: 15px; color: var(--text); }
+    .embed-header-left strong { font-weight: 700; }
+    .embed-header-right { display: flex; align-items: center; gap: 6px; font-size: 15px; font-weight: 700; color: var(--red); }
+    .embed-header-right small { font-size: 12px; font-weight: 500; margin-left: 2px; opacity: 0.9; }
+    .embed-content { display: none; padding: 0 16px 16px; }
+    .embed-panel.open .embed-content { display: block; }
+    .arrow-icon { width: 16px; height: 16px; color: #ccc; transition: transform 0.2s; }
+    .embed-panel.open .arrow-icon { transform: rotate(180deg); }
+    .badge { background: #e8f0fe; color: var(--blue); padding: 1px 6px; border-radius: 4px; font-size: 12px; font-weight: 700; }
     
-    /* 状态切换器（Demo预览用） */
-    .state-switcher { max-width: 414px; margin: 12px auto 24px; display: flex; gap: 8px; justify-content: center; padding: 0 16px; }
-    .state-switcher button { flex: 1; padding: 8px 0; border-radius: 16px; border: 1px solid #ddd; background: #fff; font-size: 12px; color: #333; cursor: pointer; white-space: nowrap; }
-    .state-switcher button.on { background: var(--blue); color: #fff; border-color: var(--blue); }
     
     /* 底部操作栏 */
     .bottom-bar { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 414px; background: #fff; padding: 8px 16px 20px; display: flex; align-items: center; gap: 14px; border-top: 1px solid var(--border); z-index: 50; }
     .btn-big { flex: 1; background: var(--blue); color: #fff; border: none; padding: 11px 0; border-radius: 22px; font-size: 16px; font-weight: 600; }
     .btn-ico { display: flex; flex-direction: column; align-items: center; gap: 2px; background: none; border: none; font-size: 11px; color: var(--text-secondary); }
     
-    /* 遮罩 */
-    .mask { position: fixed; inset: 0; background: rgba(0,0,0,0.35); opacity: 0; pointer-events: none; transition: opacity 0.25s; z-index: 60; }
-    .mask.on { opacity: 1; pointer-events: auto; }
-    
-    /* 抽屉 */
-    .drawer { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%) translateY(100%); width: 100%; max-width: 414px; height: 62vh; background: #fff; border-radius: 16px 16px 0 0; z-index: 70; transition: transform 0.3s cubic-bezier(0.32,0.72,0,1); display: flex; flex-direction: column; }
-    .drawer.on { transform: translateX(-50%) translateY(0); }
-    .d-handle { width: 32px; height: 4px; background: #ddd; border-radius: 2px; margin: 10px auto; }
-    .d-tabs { display: flex; border-bottom: 1px solid var(--border); margin: 0 16px; }
-    .d-tab { flex: 1; text-align: center; padding: 10px; font-size: 15px; color: var(--text-secondary); position: relative; }
-    .d-tab.on { color: var(--text); font-weight: 600; }
-    .d-tab.on::after { content: ''; position: absolute; bottom: 0; left: 30%; width: 40%; height: 2px; background: var(--text); border-radius: 2px; }
-    .d-subtitle { text-align: center; font-size: 13px; color: var(--text-secondary); padding: 6px 16px 0; }
-    .d-body { flex: 1; overflow-y: auto; padding: 12px 16px 16px; -webkit-overflow-scrolling: touch; }
-    
     /* === 持仓卡片（与平台字段一致） === */
-    .pos-card { background: #fafafa; border-radius: 12px; padding: 16px; margin-bottom: 12px; }
+    .pos-card { background: #fafafa; border-radius: 12px; padding: 16px; }
     
     /* 突出盈亏区 */
     .pnl-section { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 18px; padding-bottom: 16px; border-bottom: 1px solid #eee; }
@@ -168,7 +154,7 @@
     .modal-btns .btn-confirm-modal { color: var(--blue); font-weight: 600; }
     
     /* 内容区底部padding，避免被固定栏遮挡 */
-    .content { padding-bottom: 140px; }
+    .content { padding-bottom: 100px; }
   </style>
 </head>
 <body>
@@ -246,27 +232,81 @@
         </div>
       </div>
       
+      <!-- ===== 今日订单（嵌入折叠） ===== -->
+      <div class="embed-panel" id="orderPanel">
+        <div class="embed-header" onclick="togglePanel('orderPanel')">
+          <div class="embed-header-left">
+            <span>今日订单</span>
+            <span class="badge" id="orderBadge">11</span>
+          </div>
+          <div class="embed-header-right">
+            <svg class="arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+          </div>
+        </div>
+        <div class="embed-content" id="orderContent">
+          <div class="order-list">
+            <div class="order-header">
+              <div class="col-h col-h-status">状态</div>
+              <div class="col-h col-h-price">委托价</div>
+              <div class="col-h col-h-qty">数量/已成</div>
+            </div>
+            <div id="orderList"></div>
+            <div class="history-entry" onclick="goToHistory()">查看历史订单</div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- ===== 持仓（嵌入折叠） ===== -->
+      <div class="embed-panel" id="posPanel2">
+        <div class="embed-header" onclick="togglePanel('posPanel2')">
+          <div class="embed-header-left" id="posHeaderLeft">持仓 <strong>500</strong></div>
+          <div class="embed-header-right" id="posHeaderRight">
+            <span>+3,000.00 <small>(+4.47%)</small></span>
+            <svg class="arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+          </div>
+        </div>
+        <div class="embed-content" id="posContent">
+          <div class="pos-card">
+            <!-- 突出盈亏 -->
+            <div class="pnl-section">
+              <div class="pnl-item">
+                <span class="pnl-label">今日盈亏</span>
+                <span class="pnl-amount">+3,000.00</span>
+                <span class="pnl-percent">+4.47%</span>
+              </div>
+              <div class="pnl-item">
+                <span class="pnl-label">持仓盈亏</span>
+                <span class="pnl-amount">+6,100.00</span>
+                <span class="pnl-percent">+9.53%</span>
+              </div>
+            </div>
+            <!-- 次要信息 -->
+            <div class="sub-section">
+              <div class="sub-item">
+                <span class="sub-label">市值/数量</span>
+                <span class="sub-val">70,100.00</span>
+                <span class="sub-sub">500</span>
+              </div>
+              <div class="sub-item">
+                <span class="sub-label">现价/成本</span>
+                <span class="sub-val">140.200</span>
+                <span class="sub-sub">128.000</span>
+              </div>
+              <div class="sub-item">
+                <span class="sub-label">持仓占比</span>
+                <span class="sub-val">8.35%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
       <!-- 买盘卖盘 -->
       <div class="bs">
         <div><span class="l">买盘</span><span class="v red">20.66%</span></div>
         <div><span class="l">卖盘</span><span class="v green">79.34%</span></div>
       </div>
       
-      <!-- Demo状态切换器（产品评审用，实际开发移除） -->
-      <div class="state-switcher">
-        <button class="on" onclick="setDemoState('position', this)">有持仓+有订单</button>
-        <button onclick="setDemoState('order_only', this)">无持仓+有订单</button>
-        <button onclick="setDemoState('empty', this)">无持仓+无订单</button>
-      </div>
-    </div>
-    
-    <!-- 快览条 -->
-    <div class="footer-bar" id="footerBar">
-      <div class="fl" id="footerLeft">
-        <span id="footerText">持仓 <strong>500</strong> 股</span>
-        <span class="badge" id="badge">进行中 2</span>
-      </div>
-      <div class="fr" id="footerRight">+3,000.00 <small>(+4.47%)</small></div>
     </div>
     
     <!-- 底部操作栏 -->
@@ -281,12 +321,7 @@
         <span>提醒</span>
       </button>
     </div>
-
-
   </div>
-  
-  <!-- 遮罩 -->
-  <div class="mask" id="mask"></div>
   
   <!-- 撤单确认弹窗 -->
   <div class="modal-overlay" id="cancelModal">
@@ -296,68 +331,6 @@
       <div class="modal-btns">
         <button class="btn-cancel-modal" onclick="closeCancelModal()">取消</button>
         <button class="btn-confirm-modal" onclick="confirmCancel()">确认</button>
-      </div>
-    </div>
-  </div>
-  
-  <!-- 抽屉 -->
-  <div class="drawer" id="drawer">
-    <div class="d-handle"></div>
-    <div class="d-tabs">
-      <div class="d-tab on" data-tab="pos">持仓</div>
-      <div class="d-tab" data-tab="ord" id="orderTab">今日订单</div>
-    </div>
-    <div class="d-subtitle">阿里巴巴-W · 09988.HK</div>
-    <div class="d-body" id="dBody">
-      <!-- 持仓 -->
-      <div id="posPanel">
-        <div class="pos-card">
-          <!-- 突出盈亏 -->
-          <div class="pnl-section">
-            <div class="pnl-item">
-              <span class="pnl-label">今日盈亏</span>
-              <span class="pnl-amount">+3,000.00</span>
-              <span class="pnl-percent">+4.47%</span>
-            </div>
-            <div class="pnl-item">
-              <span class="pnl-label">持仓盈亏</span>
-              <span class="pnl-amount">+6,100.00</span>
-              <span class="pnl-percent">+9.53%</span>
-            </div>
-          </div>
-          
-          <!-- 次要信息 -->
-          <div class="sub-section">
-            <div class="sub-item">
-              <span class="sub-label">市值/数量</span>
-              <span class="sub-val">70,100.00</span>
-              <span class="sub-sub">500</span>
-            </div>
-            <div class="sub-item">
-              <span class="sub-label">现价/成本</span>
-              <span class="sub-val">140.200</span>
-              <span class="sub-sub">128.000</span>
-            </div>
-            <div class="sub-item">
-              <span class="sub-label">持仓占比</span>
-              <span class="sub-val">8.35%</span>
-            </div>
-          </div>
-          
-          <button class="pos-btn-single">下单</button>
-        </div>
-      </div>
-      
-      <!-- 订单 -->
-      <div id="ordPanel" style="display:none;">
-        <div class="order-list">
-          <div class="order-header">
-            <div class="col-h col-h-status">状态</div>
-            <div class="col-h col-h-price">委托价</div>
-            <div class="col-h col-h-qty">数量/已成</div>
-          </div>
-          <div id="orderList"></div>
-        <div class="history-entry" onclick="goToHistory()">查看历史订单</div>
       </div>
     </div>
   </div>
@@ -379,48 +352,19 @@
       { side: '买入', status: '已成交', price: '133.000', qty: 200, filled: 200 }
     ];
     let orders = [...allOrders];
-
-    const drawer = document.getElementById('drawer');
-    const mask = document.getElementById('mask');
-    const footerBar = document.getElementById('footerBar');
-    let open = false;
-    let demoState = 'position'; // position | order_only | empty
-
-    function toggleDrawer(show) {
-      open = show;
-      drawer.classList.toggle('on', show);
-      mask.classList.toggle('on', show);
-      document.body.style.overflow = show ? 'hidden' : '';
-      if (show && demoState === 'order_only') {
-        document.querySelectorAll('.d-tab').forEach(t => t.classList.remove('on'));
-        document.querySelector('[data-tab="ord"]').classList.add('on');
-        document.getElementById('posPanel').style.display = 'none';
-        document.getElementById('ordPanel').style.display = 'block';
-      }
-    }
-
-    footerBar.addEventListener('click', () => toggleDrawer(true));
-    mask.addEventListener('click', () => toggleDrawer(false));
-
-    // Tab切换
-    document.querySelectorAll('.d-tab').forEach(tab => {
-      tab.addEventListener('click', () => {
-        document.querySelectorAll('.d-tab').forEach(t => t.classList.remove('on'));
-        tab.classList.add('on');
-        const target = tab.dataset.tab;
-        document.getElementById('posPanel').style.display = target === 'pos' ? 'block' : 'none';
-        document.getElementById('ordPanel').style.display = target === 'ord' ? 'block' : 'none';
-      });
-    });
-
+    let demoState = 'position';
     let activeOrderIndex = -1;
     let pendingCancelIndex = -1;
 
-    // 渲染订单列表（与平台表头一致：状态/委托价/数量/已成）
+    function togglePanel(id) {
+      document.getElementById(id).classList.toggle('open');
+    }
+
+    // 渲染订单列表
     function renderOrders() {
       const box = document.getElementById('orderList');
-      const header = document.querySelector('#ordPanel .order-header');
-      const historyEntry = document.querySelector('#ordPanel .history-entry');
+      const header = document.querySelector('#orderContent .order-header');
+      const historyEntry = document.querySelector('#orderContent .history-entry');
       if (orders.length === 0) {
         if (header) header.style.display = 'none';
         if (historyEntry) historyEntry.style.display = 'none';
@@ -488,7 +432,7 @@
         orders.splice(pendingCancelIndex, 1);
         activeOrderIndex = -1;
         renderOrders();
-        updateBadge();
+        updatePanels();
       }
       closeCancelModal();
     };
@@ -497,60 +441,35 @@
       alert('跳转历史订单列表页');
     };
 
-    function updateBadge() {
-      const total = orders.length;
-      const el = document.getElementById('badge');
-      if (demoState === 'order_only' && total > 0) {
-        el.style.display = 'inline-block';
-        el.textContent = total;
-      } else {
-        el.style.display = 'none';
-      }
-      // 更新Tab总数
-      document.getElementById('orderTab').textContent = '今日订单(' + total + ')';
-    }
-
-    function renderFooter() {
-      const left = document.getElementById('footerText');
-      const right = document.getElementById('footerRight');
-      const pending = orders.filter(o => o.status !== '已成交').length;
+    function updatePanels() {
+      const orderBadge = document.getElementById('orderBadge');
+      const posHeaderLeft = document.getElementById('posHeaderLeft');
+      const posHeaderRight = document.getElementById('posHeaderRight');
+      
+      orderBadge.textContent = orders.length;
       
       if (demoState === 'empty') {
-        footerBar.style.display = 'none';
-        return;
-      }
-      
-      footerBar.style.display = 'flex';
-      if (demoState === 'position') {
-        left.innerHTML = '持仓 <strong>500</strong> 股';
-        right.innerHTML = '+3,000.00 <small>(+4.47%)</small>';
-        right.style.color = 'var(--red)';
+        posHeaderLeft.innerHTML = '暂无持仓';
+        posHeaderRight.innerHTML = `
+          <svg class="arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>`;
+        document.getElementById('posContent').innerHTML = `
+          <div class="pos-card" style="text-align:center;padding:40px 20px;color:#999;">
+            <div style="font-size:15px;">暂无持仓</div>
+          </div>`;
       } else if (demoState === 'order_only') {
-        left.innerHTML = '今日订单';
-        right.innerHTML = '';
-      }
-      updateBadge();
-    }
-
-    window.setDemoState = function(state, btn) {
-      demoState = state;
-      document.querySelectorAll('.state-switcher button').forEach(b => b.classList.remove('on'));
-      btn.classList.add('on');
-      renderFooter();
-      
-      // 同步更新订单数据
-      if (state === 'empty') {
-        orders = [];
-      } else {
-        orders = [...allOrders];
-      }
-      renderOrders();
-      updateBadge();
-      
-      // 同步更新持仓面板内容
-      const posPanel = document.getElementById('posPanel');
-      if (demoState === 'position') {
-        posPanel.innerHTML = `
+        posHeaderLeft.innerHTML = '暂无持仓';
+        posHeaderRight.innerHTML = `
+          <svg class="arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>`;
+        document.getElementById('posContent').innerHTML = `
+          <div class="pos-card" style="text-align:center;padding:40px 20px;color:#999;">
+            <div style="font-size:15px;">暂无持仓</div>
+          </div>`;
+      } else if (demoState === 'position') {
+        posHeaderLeft.innerHTML = '持仓 <strong>500</strong>';
+        posHeaderRight.innerHTML = `
+          <span>+3,000.00 <small>(+4.47%)</small></span>
+          <svg class="arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>`;
+        document.getElementById('posContent').innerHTML = `
           <div class="pos-card">
             <div class="pnl-section">
               <div class="pnl-item">
@@ -569,28 +488,12 @@
               <div class="sub-item"><span class="sub-label">现价/成本</span><span class="sub-val">140.200</span><span class="sub-sub">128.000</span></div>
               <div class="sub-item"><span class="sub-label">持仓占比</span><span class="sub-val">8.35%</span></div>
             </div>
-            <button class="pos-btn-single">下单</button>
-          </div>`;
-      } else {
-        posPanel.innerHTML = `
-          <div class="pos-card" style="text-align:center;padding:40px 20px;color:#999;">
-            <div style="font-size:15px;">暂无持仓</div>
           </div>`;
       }
-    };
+    }
 
-    // 简单的下滑关闭手势
-    let startY = 0;
-    drawer.addEventListener('touchstart', e => { startY = e.touches[0].clientY; });
-    drawer.addEventListener('touchmove', e => {
-      const y = e.touches[0].clientY;
-      if (y - startY > 60 && document.getElementById('dBody').scrollTop <= 0) {
-        toggleDrawer(false);
-      }
-    });
-
-    renderFooter();
     renderOrders();
+    updatePanels();
   </script>
 </body>
 </html>
